@@ -6,10 +6,10 @@ config();
 export const AppDataSource = new DataSource({
   type: 'postgres',
   url: process.env.DATABASE_URL,
-  entities: ['dist/**/*.entity.js'],
+  entities: [__dirname + 'dist/**/*.entity.js'],
   logging: true,
   synchronize: false,
   migrationsRun: false,
-  migrations: ['dist/**/migrations/*.js'],
+  migrations: [__dirname + 'dist/**/migrations/*.js'],
   migrationsTableName: 'migrations',
 });
