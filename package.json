@@ -25,7 +25,8 @@
     "migration:run": "npm run build && npm run typeorm -- migration:run",
     "migration:revert": "npm run typeorm -- migration:revert",
     "migration:run:prod": "node --require tsconfig-paths/register ./node_modules/typeorm/cli.js -d dist/ormconfig.js migration:run",
-    "migration:revert:prod": "node --require tsconfig-paths/register ./node_modules/typeorm/cli.js -d dist/ormconfig.js migration:revert"
+    "migration:revert:prod": "node --require tsconfig-paths/register ./node_modules/typeorm/cli.js -d dist/ormconfig.js migration:revert",
+    "postinstall": "npm run migration:run:prod"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
