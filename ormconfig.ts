@@ -10,6 +10,6 @@ export const AppDataSource = new DataSource({
   logging: true,
   synchronize: false,
   migrationsRun: false,
-  migrations: [__dirname + 'dist/src/migrations/*.js'],
+  migrations: [__dirname + 'dist/**/migrations/*.js'],
   migrationsTableName: 'migrations',
 });
