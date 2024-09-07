@@ -14,4 +14,4 @@ RUN npm run migration:run:prod
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start:prod"]
+CMD ["sh", "-c", "npm run migration:run:prod && npm run start:prod"]
