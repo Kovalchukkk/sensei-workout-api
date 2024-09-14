@@ -13,7 +13,7 @@ export class LoginDto {
   @IsOptional()
   username: string;
 
-  @MinLength(1)
+  @MinLength(6)
   @IsString()
   password: string;
 
