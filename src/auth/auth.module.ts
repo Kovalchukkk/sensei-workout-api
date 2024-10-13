@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/users.entity';
+import { EmailService } from 'src/emails/email.service';
 
 const configService = new ConfigService();
 
@@ -17,7 +18,7 @@ const configService = new ConfigService();
     }),
     TypeOrmModule.forFeature([User]),
   ],
-  providers: [AuthService],
+  providers: [AuthService, EmailService],
   controllers: [AuthController],
 })
 export class AuthModule {}

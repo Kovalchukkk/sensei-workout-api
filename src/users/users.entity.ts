@@ -29,6 +29,8 @@ export class User {
 
   @Column({
     unique: true,
+    nullable: true,
+    default: null,
   })
   username: string;
 
