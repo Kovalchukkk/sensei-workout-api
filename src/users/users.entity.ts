@@ -42,6 +42,12 @@ export class User {
   })
   email: string;
 
+  @Column({
+    nullable: true,
+    default: null,
+  })
+  verificationCode: string;
+
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
