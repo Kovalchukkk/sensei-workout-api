@@ -19,20 +19,17 @@ export class AuthController {
     private readonly emailService: EmailService,
   ) {}
 
-  @UseGuards(AuthenticateGuard)
   @Post('send-verification')
-  async sendVerification(
-    @Request() req,
-    @Body('email') email: string,
-  ): Promise<void> {
+  async sendVerification(@Body('email') email: string): Promise<string> {
     const verificationCode = Math.floor(
       100000 + Math.random() * 900000,
     ).toString(); // Generate a 6-digit code
 
-    await Promise.all([
+    const [token] = await Promise.all([
+      await this.authService.setVerificationCode(email, verificationCode),
       await this.emailService.sendVerificationCode(email, verificationCode),
-      await this.authService.setVerificationCode(req.user, verificationCode),
     ]);
+    return token;
   }
 
   @UseGuards(AuthenticateGuard)

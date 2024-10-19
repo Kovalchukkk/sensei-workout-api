@@ -41,12 +41,24 @@ export class AuthService {
     return await this.generateToken(candidate);
   }
 
-  async setVerificationCode(user: DeepPartial<User>, code: string) {
+  async setVerificationCode(email: string, code: string) {
     const hashCode = await bcrypt.hash(code, 5);
-    await this.userRepository.update(
-      { id: user.id },
-      { ...user, verificationCode: hashCode },
+
+    const newUser = await this.userRepository.upsert(
+      {
+        email: email,
+        verificationCode: hashCode,
+        password: hashCode,
+      },
+      {
+        conflictPaths: ['email'],
+        skipUpdateIfNoValuesChanged: true,
+      },
     );
+
+    const savedUser = newUser.generatedMaps;
+
+    return await this.generateToken(savedUser[0] as User);
   }
 
   async validateVerificationCode(
