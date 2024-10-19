@@ -1,8 +1,16 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+  Request,
+  ForbiddenException,
+} from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { EmailService } from 'src/emails/email.service';
+import { AuthenticateGuard } from 'src/decorators/authenticate.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -11,13 +19,37 @@ export class AuthController {
     private readonly emailService: EmailService,
   ) {}
 
+  @UseGuards(AuthenticateGuard)
   @Post('send-verification')
-  async sendVerification(@Body('email') email: string): Promise<void> {
+  async sendVerification(
+    @Request() req,
+    @Body('email') email: string,
+  ): Promise<void> {
     const verificationCode = Math.floor(
       100000 + Math.random() * 900000,
     ).toString(); // Generate a 6-digit code
 
-    await this.emailService.sendVerificationCode(email, verificationCode);
+    await Promise.all([
+      await this.emailService.sendVerificationCode(email, verificationCode),
+      await this.authService.setVerificationCode(req.user, verificationCode),
+    ]);
+  }
+
+  @UseGuards(AuthenticateGuard)
+  @Post('validate-verification')
+  async validateVerification(
+    @Request() req,
+    @Body('verificationCode') code: string,
+  ): Promise<boolean> {
+    const isValid = await this.authService.validateVerificationCode(
+      req.user,
+      code,
+    );
+
+    if (!isValid) {
+      throw new ForbiddenException();
+    }
+    return true;
   }
 
   @Post('login')

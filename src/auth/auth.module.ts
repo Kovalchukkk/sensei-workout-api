@@ -6,6 +6,8 @@ import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/users.entity';
 import { EmailService } from 'src/emails/email.service';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './jwt.strategy';
 
 const configService = new ConfigService();
 
@@ -17,8 +19,9 @@ const configService = new ConfigService();
       signOptions: { expiresIn: '24h' },
     }),
     TypeOrmModule.forFeature([User]),
+    PassportModule,
   ],
-  providers: [AuthService, EmailService],
+  providers: [AuthService, JwtStrategy, EmailService],
   controllers: [AuthController],
 })
 export class AuthModule {}

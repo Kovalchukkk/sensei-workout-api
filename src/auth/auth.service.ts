@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/users.entity';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 import { LoginDto } from './dto/login.dto';
 
 @Injectable()
@@ -39,6 +39,24 @@ export class AuthService {
     }
 
     return await this.generateToken(candidate);
+  }
+
+  async setVerificationCode(user: DeepPartial<User>, code: string) {
+    const hashCode = await bcrypt.hash(code, 5);
+    await this.userRepository.update(
+      { id: user.id },
+      { ...user, verificationCode: hashCode },
+    );
+  }
+
+  async validateVerificationCode(
+    user: DeepPartial<User>,
+    code: string,
+  ): Promise<boolean> {
+    const isValid = await bcrypt.compare(code, user?.verificationCode);
+
+    if (!isValid) return null;
+    return true;
   }
 
   private async generateToken(user: User): Promise<string> {
