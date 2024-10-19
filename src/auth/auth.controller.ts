@@ -5,12 +5,14 @@ import {
   UseGuards,
   Request,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { EmailService } from 'src/emails/email.service';
 import { AuthenticateGuard } from 'src/decorators/authenticate.guard';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -45,6 +47,23 @@ export class AuthController {
 
     if (!isValid) {
       throw new ForbiddenException();
+    }
+    return true;
+  }
+
+  @UseGuards(AuthenticateGuard)
+  @Post('reset-password')
+  async resetUserPassword(
+    @Request() req,
+    @Body() resetPasswordDto: ResetPasswordDto,
+  ): Promise<boolean> {
+    const isUpdated = await this.authService.resetPassword(
+      req.user,
+      resetPasswordDto.password,
+    );
+
+    if (!isUpdated) {
+      throw new BadRequestException();
     }
     return true;
   }

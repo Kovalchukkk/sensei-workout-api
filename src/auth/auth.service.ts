@@ -71,6 +71,19 @@ export class AuthService {
     return true;
   }
 
+  async resetPassword(
+    user: DeepPartial<User>,
+    password: string,
+  ): Promise<boolean> {
+    const isUpdated = await this.userRepository.update(
+      { id: user.id },
+      { password: await bcrypt.hash(password, 5) },
+    );
+
+    if (!isUpdated.affected) return null;
+    return true;
+  }
+
   private async generateToken(user: User): Promise<string> {
     const token = await this.jwtService.signAsync({ id: user.id });
     return token;
