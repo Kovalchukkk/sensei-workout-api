@@ -6,6 +6,7 @@ import {
   Column,
   OneToOne,
   JoinColumn,
+  CreateDateColumn,
 } from 'typeorm';
 import { User } from '../users/users.entity';
 
@@ -25,6 +26,9 @@ export class TrainingProgram {
 
   @Column()
   daysPerWeek: number;
+
+  @CreateDateColumn({ type: 'timestamptz' })
+  createdAt: Date;
 
   @OneToOne(() => User, (user) => user.trainingProgram)
   @JoinColumn()

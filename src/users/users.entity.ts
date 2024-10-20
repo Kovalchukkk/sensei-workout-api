@@ -1,5 +1,6 @@
 import { TrainingProgram } from '../training-programs/training-programs.entity';
 import { UserPhysics } from '../user-physics/user-physics.entity';
+import { Step } from '../steps/steps.entity';
 import {
   Entity,
   Column,
@@ -57,4 +58,7 @@ export class User {
 
   @OneToOne(() => TrainingProgram, (trainingProgram) => trainingProgram.user)
   trainingProgram: TrainingProgram;
+
+  @OneToMany(() => Step, step => step.user)
+  steps: Step[];
 }

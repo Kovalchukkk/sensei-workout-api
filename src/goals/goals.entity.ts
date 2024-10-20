@@ -8,7 +8,7 @@ export class Goal {
 
   @Column({
     type: 'enum',
-    enum: ['Muscle gain', 'Gain and drying'],
+    enum: ['Gain', 'Recomposition', 'Dry'],
   })
   name: string;
 
