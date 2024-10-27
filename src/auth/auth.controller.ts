@@ -6,7 +6,11 @@ import {
   Request,
   ForbiddenException,
   BadRequestException,
+  Get,
+  Res,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { Response } from 'express';
 
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -71,5 +75,38 @@ export class AuthController {
   @Post('login')
   async login(@Body() loginDto: LoginDto): Promise<string> {
     return await this.authService.login(loginDto);
+  }
+
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  async googleAuth() {
+    // This method will trigger the Google OAuth flow
+  }
+
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  async googleAuthRedirect(@Request() req, @Res() res: Response) {
+    const token = await this.authService.generateToken(req.user);
+    
+    // HTML response with the token
+    const htmlResponse = `
+      <html>
+        <head>
+          <title>Authentication Successful</title>
+        </head>
+        <body>
+          <h1>Authentication Successful!</h1>
+          <p>Your authentication token is: ${token}</p>
+          <p>You can now close this window and return to the app.</p>
+          <script>
+            // You can add any client-side logic here if needed
+            // For example, you might want to send a message to the mobile app
+            // using a custom URL scheme or deep linking
+          </script>
+        </body>
+      </html>
+    `;
+
+    res.send(htmlResponse);
   }
 }

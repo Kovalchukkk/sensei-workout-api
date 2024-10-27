@@ -8,6 +8,7 @@ import { User } from 'src/users/users.entity';
 import { EmailService } from 'src/emails/email.service';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
+import { GoogleStrategy } from './google.strategy';
 
 const configService = new ConfigService();
 
@@ -21,7 +22,7 @@ const configService = new ConfigService();
     TypeOrmModule.forFeature([User]),
     PassportModule,
   ],
-  providers: [AuthService, JwtStrategy, EmailService],
+  providers: [AuthService, JwtStrategy, GoogleStrategy, EmailService],
   controllers: [AuthController],
 })
 export class AuthModule {}

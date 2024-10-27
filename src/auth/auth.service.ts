@@ -84,8 +84,22 @@ export class AuthService {
     return true;
   }
 
-  private async generateToken(user: User): Promise<string> {
+  async generateToken(user: User): Promise<string> {
     const token = await this.jwtService.signAsync({ id: user.id });
     return token;
+  }
+
+  async validateGoogleUser(profile: any): Promise<User> {
+    const { email } = profile;
+    let user = await this.userRepository.findOne({ where: { email } });
+
+    if (!user) {
+      user = this.userRepository.create({
+        email
+      });
+      await this.userRepository.save(user);
+    }
+
+    return user;
   }
 }
