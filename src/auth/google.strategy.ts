@@ -18,11 +18,11 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 
   async validate(
     accessToken: string,
-    done: VerifyCallback,
+    profile: any,
   ): Promise<any> {
-    console.log('done', JSON.stringify(done));
+    console.log('profile', JSON.stringify(profile));
     const userInfo = {
-      email: done.emails[0]?.value
+      email: profile.emails[0]?.value
     };
 
     const user = await this.authService.validateGoogleUser(userInfo);
