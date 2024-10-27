@@ -87,7 +87,7 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(@Request() req, @Res() res: Response) {
     const token = await this.authService.generateToken(req.user);
-    
+
     // HTML response with the token
     const htmlResponse = `
       <html>
@@ -96,7 +96,6 @@ export class AuthController {
         </head>
         <body>
           <h1>Authentication Successful!</h1>
-          <p>Your authentication token is: ${token}</p>
           <p>You can now close this window and return to the app.</p>
           <script>
             // You can add any client-side logic here if needed
@@ -108,5 +107,6 @@ export class AuthController {
     `;
 
     res.send(htmlResponse);
+    return token;
   }
 }
