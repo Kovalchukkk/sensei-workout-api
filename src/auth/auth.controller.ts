@@ -88,6 +88,10 @@ export class AuthController {
   async googleAuthRedirect(@Request() req, @Res() res: Response) {
     const token = await this.authService.generateToken(req.user);
 
+    const redirectUrl = `${req.protocol}://${req.get(
+      'host',
+    )}/google/callback?token=${token}`;
+
     // HTML response with the token
     const htmlResponse = `
       <html>
@@ -101,12 +105,12 @@ export class AuthController {
             // You can add any client-side logic here if needed
             // For example, you might want to send a message to the mobile app
             // using a custom URL scheme or deep linking
+            window.location.href = "${redirectUrl}";
           </script>
         </body>
       </html>
     `;
 
     res.send(htmlResponse);
-    return token;
   }
 }
