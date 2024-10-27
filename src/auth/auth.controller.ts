@@ -86,19 +86,41 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  async googleAuthRedirect(
+  async googleAuthRedirect(@Request() req, @Res() res: Response) {
+    const token = await this.authService.generateToken(req.user);
+
+    // Same URL with the token as a query parameter
+    const redirectUrl = `${req.protocol}://${req.get(
+      'host',
+    )}/google/callback?token=${token}`;
+
+    // HTML response with the redirect
+    const htmlResponse = `
+    <html>
+      <head>
+        <title>Authentication Successful</title>
+      </head>
+      <body>
+        <h1>Authentication Successful!</h1>
+        <p>Redirecting...</p>
+        <script>
+          // Redirecting to the same URL with the token as a query parameter
+          window.location.href = "${redirectUrl}";
+        </script>
+      </body>
+    </html>
+  `;
+
+    res.send(htmlResponse);
+  }
+
+  @Get('google/callback')
+  async googleAuthSuccessfulRedirect(
     @Request() req,
     @Res() res: Response,
-    @Query('token') token?: string,
+    @Query('token') token: string,
   ) {
-    if (token) {
-      // If the token is missing, generate and append it to the URL
-      const generatedToken = await this.authService.generateToken(req.user);
-      const redirectUrl = `${req.protocol}://${req.get(
-        'host',
-      )}/google/callback?token=${generatedToken}`;
-
-      const htmlResponse = `
+    const htmlResponse = `
       <html>
         <head>
           <title>Authentication Successful</title>
@@ -106,18 +128,10 @@ export class AuthController {
         <body>
           <h1>Authentication Successful!</h1>
           <p>You can now close this window and return to the app.</p>
-          <script>
-            // Redirect to the same URL with the generated token
-            window.location.href = "${redirectUrl}";
-          </script>
         </body>
       </html>
     `;
 
-      res.send(htmlResponse);
-    } else {
-      // If token exists, handle it here (e.g., pass it to the client)
-      res.json({ message: 'Token receiving...', token });
-    }
+    res.send(htmlResponse);
   }
 }
