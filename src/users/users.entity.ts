@@ -35,7 +35,7 @@ export class User {
   })
   username: string;
 
-  @Column()
+  @Column({ nullable: true, default: null })
   password: string;
 
   @Column({
@@ -59,6 +59,6 @@ export class User {
   @OneToOne(() => TrainingProgram, (trainingProgram) => trainingProgram.user)
   trainingProgram: TrainingProgram;
 
-  @OneToMany(() => Step, step => step.user)
+  @OneToMany(() => Step, (step) => step.user)
   steps: Step[];
 }
