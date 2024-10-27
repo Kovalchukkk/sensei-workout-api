@@ -83,7 +83,7 @@ export class AuthController {
     // This method will trigger the Google OAuth flow
   }
 
-  @Get('google/callback')
+  @Get('google/callback/*')
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(@Request() req, @Res() res: Response) {
     const token = await this.authService.generateToken(req.user);
