@@ -92,7 +92,7 @@ export class AuthController {
     // Same URL with the token as a query parameter
     const redirectUrl = `${req.protocol}://${req.get(
       'host',
-    )}/google/callback?token=${token}`;
+    )}/api/v1/auth/?token=${token}`;
 
     // HTML response with the redirect
     const htmlResponse = `
@@ -114,7 +114,7 @@ export class AuthController {
     res.send(htmlResponse);
   }
 
-  @Get('google/callback')
+  @Get('/')
   async googleAuthSuccessfulRedirect(
     @Request() req,
     @Res() res: Response,
