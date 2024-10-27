@@ -8,6 +8,7 @@ import {
   BadRequestException,
   Get,
   Res,
+  Query,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
@@ -83,17 +84,21 @@ export class AuthController {
     // This method will trigger the Google OAuth flow
   }
 
-  @Get('google/callback/*')
+  @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  async googleAuthRedirect(@Request() req, @Res() res: Response) {
-    const token = await this.authService.generateToken(req.user);
+  async googleAuthRedirect(
+    @Request() req,
+    @Res() res: Response,
+    @Query('token') token?: string,
+  ) {
+    if (token) {
+      // If the token is missing, generate and append it to the URL
+      const generatedToken = await this.authService.generateToken(req.user);
+      const redirectUrl = `${req.protocol}://${req.get(
+        'host',
+      )}/google/callback?token=${generatedToken}`;
 
-    const redirectUrl = `${req.protocol}://${req.get(
-      'host',
-    )}/google/callback?token=${token}`;
-
-    // HTML response with the token
-    const htmlResponse = `
+      const htmlResponse = `
       <html>
         <head>
           <title>Authentication Successful</title>
@@ -102,15 +107,17 @@ export class AuthController {
           <h1>Authentication Successful!</h1>
           <p>You can now close this window and return to the app.</p>
           <script>
-            // You can add any client-side logic here if needed
-            // For example, you might want to send a message to the mobile app
-            // using a custom URL scheme or deep linking
+            // Redirect to the same URL with the generated token
             window.location.href = "${redirectUrl}";
           </script>
         </body>
       </html>
     `;
 
-    res.send(htmlResponse);
+      res.send(htmlResponse);
+    } else {
+      // If token exists, handle it here (e.g., pass it to the client)
+      res.json({ message: 'Token receiving...', token });
+    }
   }
 }
